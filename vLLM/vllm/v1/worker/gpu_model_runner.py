@@ -398,7 +398,10 @@ class GPUModelRunner(LoRAModelRunnerMixin):
 
             # Update the cached states.
             num_computed_tokens = req_data.num_computed_tokens
+            num_dropped_tokens = req_data.num_dropped_tokens
+
             req_state.num_computed_tokens = num_computed_tokens
+            req_state.num_dropped_tokens = num_dropped_tokens
             # Add the sampled token(s) from the previous step (if any).
             # This doesn't include "unverified" tokens like spec decode tokens.
             num_new_tokens = (num_computed_tokens +
@@ -431,7 +434,7 @@ class GPUModelRunner(LoRAModelRunnerMixin):
             self.input_batch.num_computed_tokens_cpu[req_index] = (
                 num_computed_tokens)
             self.input_batch.num_dropped_tokens_list_cpu[req_index] = (
-                req_data.num_dropped_tokens)
+                num_dropped_tokens)
             self.input_batch.should_compress_list[req_index] = \
                 req_data.should_compress
             self.input_batch.block_table.append_row(req_data.new_block_ids,
