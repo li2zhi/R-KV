@@ -239,10 +239,7 @@ class GPUModelRunner(LoRAModelRunnerMixin):
             device=self.device)
 
         # OPTIMIZATION: Cache the tensors rather than creating them every step.
-        self.arange_np = np.arange(max(self.max_num_reqs + 1,
-                                       self.max_model_len,
-                                       self.max_num_tokens),
-                                   dtype=np.int32)
+        self.arange_np = np.arange(self.max_model_len * self.max_num_reqs, dtype=np.int32)
         # NOTE(woosuk): These tensors are "stateless", i.e., they are literally
         # a faster version of creating a new tensor every time. Thus, we should
         # not make any assumptions about the values in these tensors.
@@ -267,9 +264,7 @@ class GPUModelRunner(LoRAModelRunnerMixin):
                                             pin_memory=self.pin_memory)
         self.slot_mapping_np = self.slot_mapping_cpu.numpy()
         self.occupied_slot_mapping_cpu = torch.zeros(
-                                            max(self.max_num_reqs + 1,
-                                                self.max_model_len,
-                                                self.max_num_tokens),
+                                            self.max_model_len * self.max_num_reqs,
                                             dtype=torch.int32,
                                             device="cpu",
                                             pin_memory=self.pin_memory)
